@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { 
     View, 
     Text,
     TextInput,
     Button, 
-    StyleSheet 
+    StyleSheet ,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Alert
 } from 'react-native';
 
 import Card from '../components/card';
@@ -13,36 +16,82 @@ import Colors from '../constants/colors';
 import Input from '../components/input';
 
 const StartGameScreen = props => {
+    const  [enteredValue , setEnteredValue] =  useState('');
+    const [confirmed, setConfirmedValue ] = useState(false);
+    const [selectedValue, setSelectedValue] = useState('');
+
+    const  enteredValueHandler = text => {
+        setEnteredValue(text.replace(/[^0-9]/g, ''));
+    }
+
+    const resetEnteredValue = () => {
+        setEnteredValue('');
+        setConfirmedValue(false);
+        setSelectedValue();
+    }
+
+    const confirmedEnteredValue =  () => {
+        const chooseNumber = parseInt(enteredValue);
+        if(isNaN(chooseNumber) || 
+           chooseNumber <= 0 || 
+           chooseNumber > 99){
+            Alert.alert(
+                'Invalid Number',
+                'A Number has to be number b/w 0 to 99',
+                [{
+                    text: 'Okay',
+                    onPress: resetEnteredValue,
+                    style: 'destructive'
+                }]
+            );
+            return;
+        }
+        setConfirmedValue(true);
+        setSelectedValue(chooseNumber);
+        setEnteredValue('');
+    };
+
+    let confirmOutput;
+    if(confirmed) {
+        confirmOutput = <Text> Choose Number: {selectedValue}</Text>;
+    }
+
     return (
-        <View style={styles.screen}>
-            <Text style={styles.title}>Start New Game!</Text>
-            <Card style={styles.inputContainer}>
-                <Text style={styles.subtitle}>
-                    Select A Number
-                </Text>
-                <Input placeholder="enter a number"
-                       blurOnSubmit
-                       autoCapitalize='none'
-                       autoCorrect={false}
-                       keyboardType="number-pad"
-                       maxLength={2}
-                       style={styles.input} />
-                <View style={styles.buttonContainer}>
-                    {/* reset */}
-                    <View style={styles.button}>
-                        <Button title="RESET" 
-                                color={Colors.accent}
-                                onPress={ () => {}} />
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss()}>
+            <View style={styles.screen}>
+                <Text style={styles.title}>Start New Game!</Text>
+                <Card style={styles.inputContainer}>
+                    <Text style={styles.subtitle}>
+                        Select A Number
+                    </Text>
+                    <Input placeholder="enter a number"
+                        blurOnSubmit
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        keyboardType="number-pad"
+                        maxLength={2}
+                        value={enteredValue}
+                        onChangeText={enteredValueHandler}
+                        style={styles.input} />
+                    <View style={styles.buttonContainer}>
+                        {/* reset */}
+                        <View style={styles.button}>
+                            <Button title="RESET" 
+                                    color={Colors.accent}
+                                    onPress={resetEnteredValue} />
+                        </View>
+                        {/* confirm */}
+                        <View style={styles.button}>
+                        <Button title="CONFIRM" 
+                                color={Colors.primary}
+                                onPress={confirmedEnteredValue}
+                                onpress={ () => {} } />
+                        </View>
                     </View>
-                    {/* confirm */}
-                    <View style={styles.button}>
-                      <Button title="CONFIRM" 
-                              color={Colors.primary}
-                              onpress={ () => {} } />
-                    </View>
-                </View>
-            </Card>
-        </View>
+                </Card>
+                {confirmOutput}
+            </View>
+        </TouchableWithoutFeedback>
     );
 }
 
