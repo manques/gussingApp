@@ -14,6 +14,9 @@ import {
 import Card from '../components/card';
 import Colors from '../constants/colors';
 import Input from '../components/input';
+import NumberContainer from '../components/numberContainer';
+import Title from '../components/title';
+import TextBody from '../components/textBody';
 
 const StartGameScreen = props => {
     const  [enteredValue , setEnteredValue] =  useState('');
@@ -49,30 +52,37 @@ const StartGameScreen = props => {
         setConfirmedValue(true);
         setSelectedValue(chooseNumber);
         setEnteredValue('');
+        Keyboard.dismiss();
     };
 
     let confirmOutput;
     if(confirmed) {
-        confirmOutput = <Text> Choose Number: {selectedValue}</Text>;
+        confirmOutput = <Card style={styles.summaryContainer}>
+                            <TextBody> Choose Number</TextBody>
+                            <NumberContainer>
+                                {selectedValue}
+                            </NumberContainer>
+                            <Button title="START GAME"  onPress={() => props.onStartGame(selectedValue)} />
+                        </Card>;
     }
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss()}>
             <View style={styles.screen}>
-                <Text style={styles.title}>Start New Game!</Text>
+                <Title>Start New Game!</Title>
                 <Card style={styles.inputContainer}>
-                    <Text style={styles.subtitle}>
+                    <TextBody style={styles.subtitle}>
                         Select A Number
-                    </Text>
-                    <Input placeholder="enter a number"
-                        blurOnSubmit
-                        autoCapitalize='none'
-                        autoCorrect={false}
-                        keyboardType="number-pad"
-                        maxLength={2}
-                        value={enteredValue}
-                        onChangeText={enteredValueHandler}
-                        style={styles.input} />
+                    </TextBody>
+                    <Input  placeholder="enter a number"
+                            blurOnSubmit
+                            autoCapitalize='none'
+                            autoCorrect={false}
+                            keyboardType="number-pad"
+                            maxLength={2}
+                            value={enteredValue}
+                            onChangeText={enteredValueHandler}
+                            style={styles.input} />
                     <View style={styles.buttonContainer}>
                         {/* reset */}
                         <View style={styles.button}>
@@ -125,6 +135,10 @@ const styles = StyleSheet.create({
     },
     button: {
         width: 100
+    },
+    summaryContainer: {
+        marginTop: 20,
+        alignItems: 'center'
     }
 });
 
